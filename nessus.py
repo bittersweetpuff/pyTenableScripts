@@ -10,9 +10,13 @@ import requests.packages.urllib3
 import time
 import logging
 import numbers
+import uuid
 from scans import *
 from scaninstances import *
 from files import *
+from plugins import *
+from uuidencoder import *
+from policies import *
 
 
 LOGGER = logging.getLogger()
@@ -31,6 +35,8 @@ class Connector:
         self.scan_instances = ScanInstances(self)
         self.scans = Scans(self)
         self.file = File(self)
+        self.policies = ScanPolicy(self)
+        self.plugins = Plugin(self)
         self.res = None
         self.login_data = None
         self.token = None
@@ -62,7 +68,9 @@ class Connector:
         headers = {"X-Cookie": "token={0}".format(self.token)}
         headers.update({"Content-type": "application/json"})
         verify = False
-        datar = json.dumps(data)
+        print("Data przed ", data)
+        datar = json.dumps(data, cls=UUIDEncoder)
+        print("daraR = ", datar)
         if method == "POST":
             r = requests.post(
                 self._build_url(resource), data=datar, headers=headers, verify=verify
@@ -142,7 +150,8 @@ if __name__ == "__main__":
     gfields = "id,name,description,status,owner,repository,startTime,finishTime".split(
         ","
     )
-    my_fields = {'info'}
+    my_fields = {'name'}
+
 
     with conektor:
         LOGGER.debug(f"{guser}")
@@ -154,5 +163,5 @@ if __name__ == "__main__":
         #pprint.pprint(conektor.scan_instances.details(11183, my_fields))
         #pprint.pprint(conektor.scan_instances.delete(11181))
         #pprint.pprint(conektor.scan_instances.pause(11183))
-        pprint.pprint(conektor.file.upload(open("skan.nessus", "rb")))
+        pprint.pprint(conektor.plugins.details(12027, my_fields))
         #pprint.pprint(conektor.scan_instances.uploadTest(open("skan.nessus", "rb")))
