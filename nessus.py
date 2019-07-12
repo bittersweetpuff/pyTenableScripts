@@ -17,6 +17,7 @@ from files import *
 from plugins import *
 from uuidencoder import *
 from policies import *
+from groups import *
 
 
 LOGGER = logging.getLogger()
@@ -37,6 +38,7 @@ class Connector:
         self.file = File(self)
         self.policies = ScanPolicy(self)
         self.plugins = Plugin(self)
+        self.groups = Group(self)
         self.res = None
         self.login_data = None
         self.token = None
@@ -163,5 +165,5 @@ if __name__ == "__main__":
         #pprint.pprint(conektor.scan_instances.details(11183, my_fields))
         #pprint.pprint(conektor.scan_instances.delete(11181))
         #pprint.pprint(conektor.scan_instances.pause(11183))
-        pprint.pprint(conektor.plugins.details(12027, my_fields))
+        pprint.pprint(conektor.groups.list())
         #pprint.pprint(conektor.scan_instances.uploadTest(open("skan.nessus", "rb")))
