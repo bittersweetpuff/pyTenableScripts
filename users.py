@@ -3,34 +3,28 @@ from base import TypeCheck
 
 class User:
     def _constructor(self, **kw):
-        '''
+        """
         Handles parsing the keywords and returns a user definition document
-        '''
+        """
         # all of the following keys are string values and do not require any
         # case conversion.  We will simply iterate through them and verify that
         # they are in-fact strings.
-        keys = [
-            'username', 'password', 'permissions', 'name',
-            'email', 'type'
-        ]
+        keys = ["username", "password", "permissions", "name", "email", "type"]
         for k in keys:
             if k in kw:
                 TypeCheck(k, kw[k], str)
 
         return kw
 
-
     def __init__(self, nessus_connection):
         self.nessus = nessus_connection
-
 
     def execute(self, *args, **kwargs):
         """proxy method"""
         return self.nessus.execute(*args, **kwargs)
 
-
     def create(self, username, password, permissions, type, **kw):
-        '''
+        """
         Creates a user.
 
         :sc-api:`user: create <User.html#user_POST>`
@@ -55,18 +49,17 @@ class User:
 
         Examples:
             >>> user = sc.users.create('username', 'password', 16, 'local')
-        '''
-        kw['username'] = username
-        kw['password'] = password
-        kw['permissions'] = permissions
-        kw['type'] = type
+        """
+        kw["username"] = username
+        kw["password"] = password
+        kw["permissions"] = permissions
+        kw["type"] = type
         payload = self._constructor(**kw)
 
-        return self.execute('POST', '/users', payload = payload)
-
+        return self.execute("POST", "/users", payload=payload)
 
     def edit(self, user_id, permissions, **kw):
-        '''
+        """
         Creates a user.
 
         :sc-api:`user: create <User.html#user_POST>`
@@ -87,16 +80,14 @@ class User:
 
         Examples:
             >>> user = sc.users.edit(1, 16, name='newname')
-        '''
-        kw['permissions'] = permissions
+        """
+        kw["permissions"] = permissions
         payload = self._constructor(**kw)
 
-        return self.execute('PUT', f'/users/{user_id}', payload = payload)
-
-
+        return self.execute("PUT", f"/users/{user_id}", payload=payload)
 
     def delete(self, user_id):
-        '''
+        """
         Removes a user.
 
         Args:
@@ -108,13 +99,12 @@ class User:
 
         Examples:
             >>> sc.users.delete(1)
-        '''
+        """
 
-        return self.execute('DELETE', f'/users/{user_id}')
-
+        return self.execute("DELETE", f"/users/{user_id}")
 
     def details(self, user_id, fields=None):
-        '''
+        """
         Returns the details for a specific user.
 
         Args:
@@ -128,9 +118,9 @@ class User:
         Examples:
             >>> user = sc.users.details(1)
             >>> pprint(user)
-        '''
+        """
         det = dict()
-        usr = self.execute('GET', f'/users/{user_id}')
+        usr = self.execute("GET", f"/users/{user_id}")
 
         if fields:
             for f in fields:
@@ -141,9 +131,8 @@ class User:
         else:
             return usr
 
-
     def list(self, fields=None):
-        '''
+        """
         Retrieves the list of users.
 
         Args:
@@ -157,9 +146,9 @@ class User:
         Examples:
             >>> for user in sc.users.list():
             ...     pprint(user)
-        '''
+        """
         det = dict()
-        usr = self.execute('GET', '/users')
+        usr = self.execute("GET", "/users")
 
         if fields:
             for f in fields:

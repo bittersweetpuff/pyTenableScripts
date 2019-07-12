@@ -57,3 +57,22 @@ class Group:
 
         else:
             return grp
+
+
+    def delete(self, group_id):
+
+            return self.execute('DELETE', f'/groups/{group_id}')
+
+
+    def create(self, **kw):
+
+        payload = self._constructor(**kw)
+
+        return self.execute('POST', '/groups', payload = payload)
+
+
+    def edit(self, group_id, **kw):
+
+        payload = self._constructor(**kw)
+
+        return self.execute('PUT', f'/groups/{group_id}', payload = payload)
