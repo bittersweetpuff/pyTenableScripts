@@ -8,31 +8,6 @@ class Group:
         '''
         if 'name' in kw:
             TypeCheck('name', kw['name'], str)
-
-        if 'description' in kw:
-            TypeCheck('description', kw['description'], str)
-
-        mapping = {
-            'viewable': 'definingAssets',
-            'repos': 'repositories',
-            'lce_ids': 'lces',
-            'asset_lists': 'assets',
-            'scan_policies': 'policies',
-            'query_ids': 'queries',
-            'scan_creds': 'credentials',
-            'dashboards': 'dashboardTabs',
-            'report_cards': 'arcs',
-            'audit_files': 'auditFiles'
-        }
-        for k, v in mapping.items():
-            if k in kw:
-                # For each item in the mapping, expand the kwarg if it exists
-                # into a list of dictionaries with an id attribute.  Associate
-                # the expanded list to the value of the hash table and delete
-                # the original kwarg.
-                kw[v] = [{'id': TypeCheck('{}:item'.format(k), i, int)}
-                    for i in TypeCheck(k, kw[k], list)]
-                del(kw[k])
         return kw
 
 
@@ -46,6 +21,21 @@ class Group:
 
 
     def list(self, fields=None):
+        '''
+        Retrieves the list of scan zone definitions.
+
+        Args:
+            fields (list, optional):
+                A list of attributes to return for each group.
+
+        Returns:
+            :obj:`list`:
+                A list of group resources.
+
+        Examples:
+            >>> for group in sc.groups.list():
+            ...     pprint(group)
+        '''
         det = dict()
         grp = self.execute('GET', '/groups')
 

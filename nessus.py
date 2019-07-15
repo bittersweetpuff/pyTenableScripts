@@ -19,6 +19,7 @@ from uuidencoder import *
 from policies import *
 from groups import *
 from users import *
+from editor import *
 
 
 LOGGER = logging.getLogger()
@@ -29,6 +30,7 @@ requests.packages.urllib3.disable_warnings()
 
 LOGGER.info("starting Nessus module")
 
+putout = " "
 
 class Connector:
     """class to connect nessus with tenable sc api"""
@@ -41,6 +43,7 @@ class Connector:
         self.plugins = Plugin(self)
         self.groups = Group(self)
         self.users = User(self)
+        self.editor = Editor(self)
         self.res = None
         self.login_data = None
         self.token = None
@@ -167,5 +170,6 @@ if __name__ == "__main__":
         #pprint.pprint(conektor.scan_instances.details(11183, my_fields))
         #pprint.pprint(conektor.scan_instances.delete(11181))
         #pprint.pprint(conektor.scan_instances.pause(11183))
-        pprint.pprint(conektor.users.list())
+        pprint.pprint(conektor.scans.create('My Little Scan', 'basic', '127.0.0.1'))
+
         #pprint.pprint(conektor.scan_instances.uploadTest(open("skan.nessus", "rb")))

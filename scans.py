@@ -183,23 +183,22 @@ class Scans:
         return self.nessus.execute(*args, **kwargs)
 
 
-    def create(self, name, repo, **kw):
+    def create(self, name, template_name, targets, **kw):
         '''
         Creates a scan definition.
         '''
         kw['name'] = name
-        kw['repo'] = repo
+        uuid = self.nessus.editor.get_uuid_by_name('scan', template_name)
+        kw['text_targets'] = targets
+        kw['enabled'] = True
 
-        # If the policy_id or plugin_id is set (as one or the other generally
-        # should be) then we will automatically set the scan type based on
-        # which of the values is defined.
-        if 'policy_id' in kw:
-            kw['type'] = 'policy'
-        elif 'plugin_id' in kw:
-            kw['type'] = 'plugin'
+        payload = dict()
+        payload['uuid'] = uuid
+        payload['settings'] = kw
 
-        scan = self._constructor(**kw)
-        return self.execute("POST", "/scans", data=scan )
+
+
+        return self.execute("POST", "/scans", data=payload )
 
 
 

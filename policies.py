@@ -83,6 +83,11 @@ class ScanPolicy:
         return self.execute('DELETE', f'/policies/{policy_id}')
 
 
+    def delete(self, policy_id):
+
+        return self.execute('DELETE', f'/policies/{policy_id}')
+
+
     def details(self, policy_id, fields=None):
 
         det = dict()
