@@ -164,10 +164,10 @@ class ScanPolicy:
             uuid (str, optional):
                 Templates uuid. At least one of the arguments (uuid, title, name
                 ) cant be empty
-            title (bol, optional):
+            title (str, optional):
                 Templates title. At least one of the arguments (uuid, title, name
                 ) cant be empty
-            name (bol, optional):
+            name (str, optional):
                 Templates name. At least one of the arguments (uuid, title, name
                 ) cant be empty
 
