@@ -157,7 +157,7 @@ if __name__ == "__main__":
     gfields = "id,name,description,status,owner,repository,startTime,finishTime".split(
         ","
     )
-    my_fields = {'name'}
+    my_fields = {'uuid'}
 
 
     with conektor:
@@ -170,6 +170,7 @@ if __name__ == "__main__":
         #pprint.pprint(conektor.scan_instances.details(11183, my_fields))
         #pprint.pprint(conektor.scan_instances.delete(11181))
         #pprint.pprint(conektor.scan_instances.pause(11183))
-        pprint.pprint(conektor.scans.create('My Little Scan', 'basic', '127.0.0.1'))
+        pprint.pprint(conektor.policies.template_details(title="Advanced Scan", fields=my_fields))
+        #pprint.pprint(conektor.policies.template_list(my_fields))
 
         #pprint.pprint(conektor.scan_instances.uploadTest(open("skan.nessus", "rb")))

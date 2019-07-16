@@ -29,3 +29,11 @@ class Editor:
             if a['name'] == name:
                 return a['uuid']
         return None
+
+
+    def get_uuid_by_title(self, type, title):
+        result = self.list(type)
+        for a in result['templates']:
+            if a['title'] == title:
+                return a['uuid']
+        return None
