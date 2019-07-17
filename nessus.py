@@ -170,7 +170,10 @@ if __name__ == "__main__":
         #pprint.pprint(conektor.scan_instances.details(11183, my_fields))
         #pprint.pprint(conektor.scan_instances.delete(11181))
         #pprint.pprint(conektor.scan_instances.pause(11183))
-        pprint.pprint(conektor.policies.template_details(title="Advanced Scan", fields=my_fields))
+        #pprint.pprint(conektor.scans.create(template_name='advanced', name='Another scan bites the dust', targets='127.0.0.1-127.0.0.14', description='Another scan just proves the point'))
+        pprint.pprint(conektor.scans.edit(scan_id=11241, enabled=True, targets='127.0.0.1', description='Another scan was just edited'))
+        #result = conektor.scans.details(scan_id=11241, fields={'info'})
+        #pprint.pprint(result['info'][0]['name'])
         #pprint.pprint(conektor.policies.template_list(my_fields))
 
         #pprint.pprint(conektor.scan_instances.uploadTest(open("skan.nessus", "rb")))

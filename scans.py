@@ -72,13 +72,20 @@ class Scans:
         """proxy method"""
         return self.nessus.execute(*args, **kwargs)
 
-    def create(self, name, template_name, targets, **kw):
+    def create(self, name, targets, **kw):
         """
         Creates a scan definition.
 
         Args:
-            uuid (str):
-                The uuid for the editor template to use.
+            uuid (str, optional):
+                Templates uuid. At least one of the arguments (uuid, title, name
+                ) cant be empty
+            template_title (str, optional):
+                Templates title. At least one of the arguments (uuid, title, name
+                ) cant be empty
+            template_name (str, optional):
+                Templates name. At least one of the arguments (uuid, title, name
+                ) cant be empty
             name (str):
                 The name of the scan.
             description (str, optional):
@@ -104,8 +111,8 @@ class Scans:
                 would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
             timezone (str, optional):
                 The timezone for the scan schedule.
-            text_targets (str):
-                The list of targets to scan.
+            targets (str):
+                Targets to scan.
             agent_group_id (list, optional):
                 The list of agent group IDs to scan; only valid for Agent scans.
             file_targets (str, optional):
@@ -125,16 +132,109 @@ class Scans:
             >>> sc.scans.create('Example scan', 1, policy_id=1001,
             ...     targets=['127.0.0.1'])
         """
+
+        uuid = None
+        if "uuid" in kw:
+            uuid = kw["uuid"]
+        elif "template_name" in kw:
+            name = kw["template_name"]
+            uuid = self.nessus.editor.get_uuid_by_name("scan", name)
+        elif "template_title" in kw:
+            title = kw["template_title"]
+            uuid = self.nessus.editor.get_uuid_by_title("scan", title)
+        else:
+            raise Exception("Error: Bad Argument")
+
         kw["name"] = name
-        uuid = self.nessus.editor.get_uuid_by_name("scan", template_name)
         kw["text_targets"] = targets
         kw["enabled"] = True
 
         payload = dict()
         payload["uuid"] = uuid
-        payload["settings"] = self._constructor(kw)
+        payload["settings"] = self._constructor(**kw)
 
         return self.execute("POST", "/scans", data=payload)
+
+
+    def edit(self, scan_id, **kw):
+        """
+        Creates a scan definition.
+
+        Args:
+            uuid (str, optional):
+                Templates uuid.
+            template_title (str, optional):
+                Templates title.
+            template_name (str, optional):
+                Templates name.
+            name (str, optional):
+                The name of the scan.
+            description (str, optional):
+                The description of the scan.
+            policy_id (int, optional):
+                The unique id of the policy to use.
+            folder_id (int, optional):
+                The unique id of the destination folder for the scan.
+            scanner_id (int, optional):
+                The unique id of the scanner to use.
+            enabled (bool):
+                If true, the schedule for the scan is enabled.
+            launch (str, optional):
+                When to launch the scan. (i.e. ON_DEMAND, DAILY, WEEKLY, MONTHLY, YEARLY)
+            starttime (str, optional):
+                The starting time and date for the scan (i.e. YYYYMMDDTHHMMSS).
+            rrules (str, optional):
+                Expects a semi-colon delimited string comprised of three values.
+                The frequency (FREQ=ONETIME or DAILY or WEEKLY or MONTHLY or YEARLY),
+                the interval (INTERVAL=1 or 2 or 3 ... x), and the days of the
+                week (BYDAY=SU,MO,TU,WE,TH,FR,SA). To create a scan that runs
+                every three weeks on Monday Wednesday and Friday the string
+                would be 'FREQ=WEEKLY;INTERVAL=3;BYDAY=MO,WE,FR'
+            timezone (str, optional):
+                The timezone for the scan schedule.
+            targets (str):
+                Targets to scan.
+            agent_group_id (list, optional):
+                The list of agent group IDs to scan; only valid for Agent scans.
+            file_targets (str, optional):
+                The name of a file containing the list of targets to scan.
+            emails (str, optional):
+                A comma separated list of accounts who will recieve the email summary report.
+            acls (list, optional):
+                An array containing permissions to apply to the scan.
+
+        Returns:
+            :obj:`dict`:
+                The scan resource for the created scan.
+
+        Examples:
+            Creating a scan for a single host:
+
+            >>> nessus.scans.edit(scan_id=11241, enabled=True, targets='127.0.0.1', description='Another scan was just edited')
+        """
+        uuid = None
+        if "uuid" in kw:
+            uuid = kw["uuid"]
+        elif "template_name" in kw:
+            uuid = self.nessus.editor.get_uuid_by_name("scan", kw["template_name"])
+        elif "template_title" in kw:
+            uuid = self.nessus.editor.get_uuid_by_title("scan", kw["template_title"])
+
+        payload = dict()
+        if uuid:
+            payload["uuid"] = uuid
+
+        if "name" not in kw:
+            getter = self.details(scan_id, fields={'info'})
+            kw["name"] = getter['info'][0]['name']
+
+
+
+        kw["text_targets"] = kw["targets"]
+        payload["settings"] = self._constructor(**kw)
+
+        return self.execute("PUT", f"/scans/{scan_id}", data=payload)
+
 
     def copy(self, scan_id, name=None):
         """
