@@ -137,11 +137,9 @@ class Scans:
         if "uuid" in kw:
             uuid = kw["uuid"]
         elif "template_name" in kw:
-            name = kw["template_name"]
-            uuid = self.nessus.editor.get_uuid_by_name("scan", name)
+            uuid = self.nessus.editor.get_uuid_by_name("scan", kw["template_name"])
         elif "template_title" in kw:
-            title = kw["template_title"]
-            uuid = self.nessus.editor.get_uuid_by_title("scan", title)
+            uuid = self.nessus.editor.get_uuid_by_title("scan", kw["template_title"])
         else:
             raise Exception("Error: Bad Argument")
 
@@ -228,8 +226,6 @@ class Scans:
             getter = self.details(scan_id, fields={'info'})
             kw["name"] = getter['info'][0]['name']
 
-
-
         kw["text_targets"] = kw["targets"]
         payload["settings"] = self._constructor(**kw)
 
@@ -297,6 +293,39 @@ class Scans:
             payload["alt_targets"] = alt_targets
 
         return self.execute("POST", f"/scans/{scan_id}/launch", data=payload)
+
+    def pause(self, scan_id):
+        '''
+        Pauses a running scan instance.
+        Args:
+            scan_id (int): The identifier for the scan to pause.
+        '''
+        ret = dict()
+        ret["response"] = []
+        pause = self.execute("POST", f"/scans/{scan_id}/pause")
+        return type(pause)
+
+
+    def resume(self, scan_id):
+        '''
+        Resumes a paused scan instance.
+        Args:
+            scan_id (int): The identifier for the scan to resume.
+        '''
+        res = self.execute("POST", f"/scans/{scan_id}/resume")
+
+        return res
+
+
+    def stop(self, scan_id):
+        '''
+        Stops a running scan instance.
+        Args:
+            scan_id (int): The identifier for the scan to stop.
+        '''
+        stp = self.execute("POST", f"/scans/{scan_id}/stop")
+
+        return stp
 
     def delete(self, scan_id):
         """

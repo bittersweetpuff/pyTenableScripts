@@ -29,6 +29,28 @@ class ScanPolicy:
         """
         return self.execute("POST", f"/policies/{policy_id}/copy")
 
+
+    def create(self, **kw):
+
+        uuid = None
+        if "uuid" in kw:
+            uuid = kw["uuid"]
+        elif "template_name" in kw:
+            uuid = self.nessus.editor.get_uuid_by_name("policy", kw["template_name"])
+        elif "template_title" in kw:
+            uuid = self.nessus.editor.get_uuid_by_title("policy", kw["template_title"])
+        else:
+            raise Exception("Error: Bad Argument")
+
+        payload = dict()
+        payload['uuid'] = uuid
+        for x in kw:
+            payload[x] = kw[x]
+
+        return self.execute("POST", "/policies", data=payload)
+
+
+
     def delete(self, policy_id):
         """
         Removes a configured scan policy.

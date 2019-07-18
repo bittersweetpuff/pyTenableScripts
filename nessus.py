@@ -20,6 +20,7 @@ from policies import *
 from groups import *
 from users import *
 from editor import *
+from NessusDataKeeper import *
 
 
 LOGGER = logging.getLogger()
@@ -44,6 +45,7 @@ class Connector:
         self.groups = Group(self)
         self.users = User(self)
         self.editor = Editor(self)
+        self.dataKeeper = NessusDataKeeper(self)
         self.res = None
         self.login_data = None
         self.token = None
@@ -154,10 +156,7 @@ if __name__ == "__main__":
     LOGGER.setLevel(logging.DEBUG)
     LOGGER.debug("starting")
     conektor = Connector(GetNessusConsole())
-    gfields = "id,name,description,status,owner,repository,startTime,finishTime".split(
-        ","
-    )
-    my_fields = {'uuid'}
+    my_fields = {'uuid', 'name', 'title'}
 
 
     with conektor:
@@ -170,10 +169,21 @@ if __name__ == "__main__":
         #pprint.pprint(conektor.scan_instances.details(11183, my_fields))
         #pprint.pprint(conektor.scan_instances.delete(11181))
         #pprint.pprint(conektor.scan_instances.pause(11183))
-        #pprint.pprint(conektor.scans.create(template_name='advanced', name='Another scan bites the dust', targets='127.0.0.1-127.0.0.14', description='Another scan just proves the point'))
-        pprint.pprint(conektor.scans.edit(scan_id=11241, enabled=True, targets='127.0.0.1', description='Another scan was just edited'))
+        #pprint.pprint(conektor.scans.create(template_name='advanced', name='Skan do Ubicia', policy_id=11212, targets='127.0.0.1', description='opis skanu'))
+        #pprint.pprint(conektor.scans.launch(11251))
+        #pprint.pprint(conektor.scans.list())
+        conektor.dataKeeper.Prepare()
+        pprint.pprint(conektor.dataKeeper.UpdateFilteredResults(fields = {'name', 'status', 'id'}))
+        #pprint.pprint(conektor.scans.details(11235))
+        #pprint.pprint(conektor.scans.resume(11251))
+        #pprint.pprint(conektor.scans.stop(11251))
+        #pprint.pprint(conektor.scans.delete(scan_id=11256))
+
+
         #result = conektor.scans.details(scan_id=11241, fields={'info'})
+
+
         #pprint.pprint(result['info'][0]['name'])
-        #pprint.pprint(conektor.policies.template_list(my_fields))
+        #pprint.pprint(conektor.policies.create(template_title="Web Application Tests", name="Another Policy Bites the Dust"))
 
         #pprint.pprint(conektor.scan_instances.uploadTest(open("skan.nessus", "rb")))
