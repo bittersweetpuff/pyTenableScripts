@@ -2,6 +2,7 @@ class NessusDataKeeper:
 
     def __init__(self, nessus_connection):
         self.scans = []
+        self.scansTemplates = []
         self.nessus = nessus_connection
         self.folderID = None
 
@@ -18,6 +19,8 @@ class NessusDataKeeper:
         for scan in results:
             if scan['folder_id'] == self.folderID:
                 self.scans.append(scan)
+
+        self.GetTemplateList()
 
 
     def SetFolderID(self, folderType='main'):
@@ -37,16 +40,36 @@ class NessusDataKeeper:
                 self.scans.append(scan)
 
 
-    def FilterResults(self, fields):
-
+    def FilterScanResults(self, fields):
         result = []
         for scan in self.scans:
             dictionary = dict()
             for field in fields:
                 dictionary[field] = scan[field]
             result.append(dictionary.copy())
-
         return result
+
+
+    def GetTemplateList(self):
+        self.scansTemplates = []
+        results = self.nessus.editor.list('scan')
+        for template in results['templates']:
+            self.scansTemplates.append(template)
+
+
+    def FilterTemplateResultsTitles(self):
+        result = []
+        for template in self.scansTemplates:
+            result.append(template['title'])
+        return result
+
+
+    def BuildUUIDDict(self):
+        result = dict()
+        for template in self.scansTemplates:
+            result[template['title']] = template['uuid']
+        return result
+
 
     def UpdateFilteredResults(self, fields):
         self.GetScansList()
