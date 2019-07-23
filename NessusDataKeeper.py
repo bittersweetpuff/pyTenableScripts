@@ -41,6 +41,7 @@ class NessusDataKeeper:
 
 
     def FilterScanResults(self, fields):
+        self.GetScansList()
         result = []
         for scan in self.scans:
             dictionary = dict()

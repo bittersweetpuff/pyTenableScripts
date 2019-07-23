@@ -1,10 +1,17 @@
-
+import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QMessageBox
 from nessus import *
 from jsonreader import *
+import types
+
+
 
 class Ui_ScanCreationDialog(object):
+    def closeIt(self):
+        self.quit()
+
+
     def setupUi(self, ScanCreationDialog, nessus):
         self.nessus = nessus
         ScanCreationDialog.setObjectName("ScanCreationDialog")
@@ -106,15 +113,11 @@ class Ui_ScanCreationDialog(object):
         self.createButton.setGeometry(QtCore.QRect(340, 380, 75, 23))
         self.createButton.setObjectName("createButton")
 
-        self.cancelButton = QtWidgets.QPushButton(ScanCreationDialog)
-        self.cancelButton.setGeometry(QtCore.QRect(430, 380, 75, 23))
-        self.cancelButton.setObjectName("cancelButton")
 
 
 
         #MY DEF STARTS HERE:
         self.createButton.clicked.connect(self.getValues)
-        self.cancelButton.clicked.connect(self.nessus.logout)
         self.launchComboBox.addItems(['', 'ON_DEMAND', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'])
         self.templateComboBox.addItems(nessus.dataKeeper.FilterTemplateResultsTitles())
         self.succesMSG = QMessageBox()
@@ -122,6 +125,7 @@ class Ui_ScanCreationDialog(object):
 
         self.retranslateUi(ScanCreationDialog)
         QtCore.QMetaObject.connectSlotsByName(ScanCreationDialog)
+
 
     def retranslateUi(self, ScanCreationDialog):
         _translate = QtCore.QCoreApplication.translate
@@ -143,7 +147,17 @@ class Ui_ScanCreationDialog(object):
         self.label_15.setText(_translate("ScanCreationDialog", "Emails"))
         self.label_16.setText(_translate("ScanCreationDialog", "Timezone"))
         self.createButton.setText(_translate("ScanCreationDialog", "Create"))
-        self.cancelButton.setText(_translate("ScanCreationDialog", "Cancel"))
+
+
+
+    def showDialog(self, title, message):
+       msgBox = QMessageBox()
+       msgBox.setIcon(QMessageBox.Information)
+       msgBox.setText(message)
+       msgBox.setWindowTitle(title)
+       msgBox.setStandardButtons(QMessageBox.Ok)
+       msgBox.show()
+       self.errorWindow = msgBox
 
 
     def getValues(self):
@@ -201,20 +215,17 @@ class Ui_ScanCreationDialog(object):
         if agent_group_id != '':
             payload['agent_group_id'] = agent_group_id.split(", ")
 
-        #print(payload)
-        try:
-            self.nessus.scans.create(name = name, uuid = uuid, targets = text_targets, **payload)
-        except Exception:
-            self.errorMSG.setText("Error")
-            self.errorMSG.exec()
-        else:
-            self.succesMSG.setText("Succes")
 
+        retu = self.nessus.scans.create(name = name, uuid = uuid, targets = text_targets, **payload)
+
+        if isinstance(retu, str):
+            self.showDialog("error", retu)
+        else:
+            self.showDialog("Succes", "Scan was created")
 
 
 
 if __name__ == "__main__":
-    import sys
 
     gpwd = GetPass()
     #guser = getpass.getuser()
