@@ -1,4 +1,3 @@
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 from nessus import *
 from jsonreader import *
@@ -60,7 +59,7 @@ class Ui_NessusScanManagerTool(object):
         self.connectionStatus = QtWidgets.QLineEdit(self.centralwidget)
         self.connectionStatus.setGeometry(QtCore.QRect(90, 20, 113, 20))
         self.connectionStatus.setObjectName("connectionStatus")
-        self.connectionStatus.setText('Disconnected')
+        self.connectionStatus.setText("Disconnected")
         self.connectionStatus.setReadOnly(True)
         NessusScanManagerTool.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(NessusScanManagerTool)
@@ -80,18 +79,18 @@ class Ui_NessusScanManagerTool(object):
         self.menuStart.addAction(self.actionDisconnect)
         self.menubar.addAction(self.menuStart.menuAction())
 
-
-        #my COde
+        # my COde
         self.actionConnect_to_Nessus.triggered.connect(self.connectToNessus)
         self.actionDisconnect.triggered.connect(self.disconnectFromNessus)
-
 
         self.retranslateUi(NessusScanManagerTool)
         QtCore.QMetaObject.connectSlotsByName(NessusScanManagerTool)
 
     def retranslateUi(self, NessusScanManagerTool):
         _translate = QtCore.QCoreApplication.translate
-        NessusScanManagerTool.setWindowTitle(_translate("NessusScanManagerTool", "MainWindow"))
+        NessusScanManagerTool.setWindowTitle(
+            _translate("NessusScanManagerTool", "MainWindow")
+        )
         self.label.setText(_translate("NessusScanManagerTool", "Scans:"))
         self.refreshButton.setText(_translate("NessusScanManagerTool", "Refresh"))
         self.newButton.setText(_translate("NessusScanManagerTool", "New"))
@@ -102,95 +101,118 @@ class Ui_NessusScanManagerTool(object):
         self.stopButton.setText(_translate("NessusScanManagerTool", "Stop"))
         self.label_2.setText(_translate("NessusScanManagerTool", "Status:"))
         self.menuStart.setTitle(_translate("NessusScanManagerTool", "Start"))
-        self.actionConnect_to_Nessus.setText(_translate("NessusScanManagerTool", "Connect to Nessus"))
+        self.actionConnect_to_Nessus.setText(
+            _translate("NessusScanManagerTool", "Connect to Nessus")
+        )
         self.actionDisconnect.setText(_translate("NessusScanManagerTool", "Disconnect"))
 
-
-################################################################################
-########################### My COde Starts Here ################################
-################################################################################
-
+    ################################################################################
+    ########################### My COde Starts Here ################################
+    ################################################################################
 
     def connectToNessus(self):
+        """
+        Connects Manager to Nessus console. Function takes login credentials
+        from SC_Data.json file.
+        """
         gpwd = GetPass()
         guser = GetUser()
         self.nessus.login(guser, gpwd)
         self.nessus.dataKeeper.Prepare()
-        self.connectionStatus.setText('Connected')
-
+        self.connectionStatus.setText("Connected")
 
     def disconnectFromNessus(self):
+        """
+        Disconnects from Nessus console
+        """
         self.nessus.logout()
         self.scansTable.setRowCount(0)
-        self.connectionStatus.setText('Disconnected')
-
+        self.connectionStatus.setText("Disconnected")
 
     def getScanIDFromTable(self):
+        """
+        Gets list of scanID's from table
+        """
         indexes = []
         for selectionRange in self.scansTable.selectedRanges():
-            indexes.extend(range(selectionRange.topRow(), selectionRange.bottomRow()+1))
+            indexes.extend(
+                range(selectionRange.topRow(), selectionRange.bottomRow() + 1)
+            )
             return indexes
 
-
     def deleteSelectedScans(self):
+        """
+        Deletes selected scans on Nessus console and updates the list
+        """
         indexes = self.getScanIDFromTable()
         for i in indexes:
             self.nessus.scans.delete(int(self.scansTable.item(i, 0).text()))
         self.builtTable()
 
-
     def launchSelectedScans(self):
+        """
+        Launches selected scans on Nessus console and updates the list
+        """
         indexes = self.getScanIDFromTable()
         for i in indexes:
             self.nessus.scans.launch(int(self.scansTable.item(i, 0).text()))
         self.builtTable()
 
-
     def pauseSelectedScans(self):
+        """
+        Pauses selected scans on Nessus console and updates the list
+        """
         indexes = self.getScanIDFromTable()
         for i in indexes:
             self.nessus.scans.pause(int(self.scansTable.item(i, 0).text()))
         self.builtTable()
 
-
     def resumeSelectedScans(self):
+        """
+        Resumes selected scans on Nessus console and updates the list
+        """
         indexes = self.getScanIDFromTable()
         for i in indexes:
             self.nessus.scans.resume(int(self.scansTable.item(i, 0).text()))
         self.builtTable()
 
-
     def stopSelectedScans(self):
+        """
+        Stops selected scans on Nessus console and updates the list
+        """
         indexes = self.getScanIDFromTable()
         for i in indexes:
             self.nessus.scans.stop(int(self.scansTable.item(i, 0).text()))
         self.builtTable()
 
-
     def callScanCreator(self):
+        """
+        Calls the scanCreator window
+        """
         self.ScanCreationDialog = QtWidgets.QDialog()
         self.creatorui = Ui_ScanCreationDialog()
         self.creatorui.setupUi(self.ScanCreationDialog, self.nessus)
         self.ScanCreationDialog.show()
 
-
     def builtTable(self):
-        results = self.nessus.dataKeeper.FilterScanResults({'id', 'name', 'status'})
+        """
+        Fills the scan table with data
+        """
+        results = self.nessus.dataKeeper.FilterScanResults({"id", "name", "status"})
         rows = len(results)
         self.scansTable.setRowCount(rows)
         self.scansTable.setColumnCount(3)
         currentRow = 0
         for scan in results:
-            self.scansTable.setItem(currentRow, 0, QTableWidgetItem(str(scan['id'])))
-            self.scansTable.setItem(currentRow, 1, QTableWidgetItem(scan['name']))
-            self.scansTable.setItem(currentRow, 2, QTableWidgetItem(scan['status']))
+            self.scansTable.setItem(currentRow, 0, QTableWidgetItem(str(scan["id"])))
+            self.scansTable.setItem(currentRow, 1, QTableWidgetItem(scan["name"]))
+            self.scansTable.setItem(currentRow, 2, QTableWidgetItem(scan["status"]))
             currentRow = currentRow + 1
-
-
 
 
 if __name__ == "__main__":
     import sys
+
     FMT = "%(asctime)-15s %(levelname)s	%(module)s %(lineno)d %(message)s"
     logging.basicConfig(format=FMT)
     LOGGER.setLevel(logging.DEBUG)

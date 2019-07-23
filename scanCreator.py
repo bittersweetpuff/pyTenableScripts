@@ -117,7 +117,7 @@ class Ui_ScanCreationDialog(object):
 
 
         #MY DEF STARTS HERE:
-        self.createButton.clicked.connect(self.getValues)
+        self.createButton.clicked.connect(self.createScan)
         self.launchComboBox.addItems(['', 'ON_DEMAND', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'])
         self.templateComboBox.addItems(nessus.dataKeeper.FilterTemplateResultsTitles())
         self.succesMSG = QMessageBox()
@@ -151,6 +151,13 @@ class Ui_ScanCreationDialog(object):
 
 
     def showDialog(self, title, message):
+        '''
+        Shows Message Box
+
+        Args:
+            title (str): A title for a popup window
+            message (str): A message to display
+        '''
        msgBox = QMessageBox()
        msgBox.setIcon(QMessageBox.Information)
        msgBox.setText(message)
@@ -160,7 +167,11 @@ class Ui_ScanCreationDialog(object):
        self.errorWindow = msgBox
 
 
-    def getValues(self):
+
+    def createScan(self):
+        '''
+        Creates scan based on information given by user to right fields.
+        '''
         #obligatory data
         payload = dict()
         name = self.nameField.text()
