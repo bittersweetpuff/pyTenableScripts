@@ -77,9 +77,7 @@ class Connector:
         headers = {"X-Cookie": "token={0}".format(self.token)}
         headers.update({"Content-type": "application/json"})
         verify = False
-        print("Data przed ", data)
         datar = json.dumps(data, cls=UUIDEncoder)
-        print("daraR = ", datar)
         if method == "POST":
             r = requests.post(
                 self._build_url(resource), data=datar, headers=headers, verify=verify

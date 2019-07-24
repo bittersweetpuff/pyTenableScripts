@@ -158,13 +158,13 @@ class Ui_ScanCreationDialog(object):
             title (str): A title for a popup window
             message (str): A message to display
         '''
-       msgBox = QMessageBox()
-       msgBox.setIcon(QMessageBox.Information)
-       msgBox.setText(message)
-       msgBox.setWindowTitle(title)
-       msgBox.setStandardButtons(QMessageBox.Ok)
-       msgBox.show()
-       self.errorWindow = msgBox
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgBox.setText(message)
+        msgBox.setWindowTitle(title)
+        msgBox.setStandardButtons(QMessageBox.Ok)
+        msgBox.show()
+        self.errorWindow = msgBox
 
 
 
